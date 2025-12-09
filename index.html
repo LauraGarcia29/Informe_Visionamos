@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Informe de Consumos InfyCredit - Visionamos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Enlazamos el CSS externo -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,7 +11,6 @@
     <header>
       <div class="header-left">
         <div class="header-logos">
-          <!-- Usa rutas relativas (los PNG en la misma carpeta que este HTML) -->
           <img src="logo_infycredit.png" alt="InfyCredit" class="logo" />
           <img src="logo_visionamos.png" alt="Visionamos" class="logo" />
         </div>
@@ -61,8 +59,10 @@
       </div>
     </section>
 
-   <div class="content-grid">
-      <!-- KPIs / INDICADORES + RESUMEN POR TIPO -->
+    <!-- GRID PRINCIPAL: IZQUIERDA KPIs, DERECHA TABLA -->
+    <div class="content-grid">
+
+      <!-- IZQUIERDA: INDICADORES + BARRA + RESUMEN -->
       <section class="card">
         <div class="card-title">
           Indicadores de consumo
@@ -103,7 +103,7 @@
           </div>
         </div>
 
-        <!-- 🔽 NUEVO: resumen por tipo (según filtros) dentro de la MISMA tarjeta -->
+        <!-- Resumen por tipo (SEGÚN FILTROS) debajo de la barra -->
         <div class="resumen-card">
           <div class="resumen-title">Resumen de operaciones (según filtros)</div>
           <div class="resumen-grid">
@@ -121,6 +121,10 @@
             </div>
           </div>
         </div>
+        <div class="resumen-box">
+      <div class="resumen-label">Total (registro)</div>
+      <div class="resumen-value" id="resTotal">0</div>
+    </div>
 
         <p class="muted" id="filtroResumen"></p>
         <p class="error" id="errorMsg" style="display:none;"></p>
@@ -173,10 +177,12 @@
           bolsa, mes y entidad seleccionados.
         </p>
       </section>
-    </div>
-  </div>
-    <!-- LÓGICA DEL DASHBOARD -->
-   <script src="dashboard.js?v=1.0.3"></script>
-   
+
+    </div> <!-- /content-grid -->
+  </div> <!-- /page -->
+
+  <!-- LÓGICA DEL DASHBOARD -->
+  <script src="dashboard.js"></script>
 </body>
 </html>
+

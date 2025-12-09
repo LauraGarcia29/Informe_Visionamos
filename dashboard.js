@@ -47,9 +47,7 @@ const kpiBolsaTotal = document.getElementById("kpiBolsaTotal");
 const kpiBolsaConsumida = document.getElementById("kpiBolsaConsumida");
 const kpiBolsaConsumidaPct = document.getElementById("kpiBolsaConsumidaPct");
 const kpiBolsaDisponible = document.getElementById("kpiBolsaDisponible");
-const kpiBolsaDisponiblePct = document.getElementById(
-  "kpiBolsaDisponiblePct"
-);
+const kpiBolsaDisponiblePct = document.getElementById("kpiBolsaDisponiblePct");
 const kpiValidaciones = document.getElementById("kpiValidaciones");
 
 const gaugeFill = document.getElementById("gaugeFill");
@@ -70,6 +68,12 @@ const totTotal = document.getElementById("totTotal");
 const resValidacion = document.getElementById("resValidacion");
 const resDeudor = document.getElementById("resDeudor");
 const resCodeudor = document.getElementById("resCodeudor");
+const resTotal = document.getElementById("resTotal");
+
+// Helper para asignar texto de forma segura
+function setTextSafe(el, value) {
+  if (el) el.textContent = value;
+}
 
 // ===================== ESTADO =====================
 let allData = [];
@@ -96,15 +100,6 @@ function labelFromMesStr(mesStr) {
 
 function getBolsaById(id) {
   return bolsas.find((b) => b.id === id) || bolsas[0];
-}
-
-// helpers para no reventar si algún elemento es null
-function safeText(el, value) {
-  if (el) el.textContent = value;
-}
-
-function safeWidth(el, value) {
-  if (el) el.style.width = value;
 }
 
 // ===================== CARGA DE DATOS =====================
@@ -171,13 +166,12 @@ function initBolsaSelect() {
 function onBolsaChange() {
   const bolsa = getBolsaById(bolsaSelect.value);
 
-  safeText(
-    rangoBolsaLabel,
-    `${bolsa.inicio.split("-").reverse().join("/")} – ${bolsa.fin
+  if (rangoBolsaLabel) {
+    rangoBolsaLabel.textContent = `${bolsa.inicio
       .split("-")
       .reverse()
-      .join("/")}`
-  );
+      .join("/")} – ${bolsa.fin.split("-").reverse().join("/")}`;
+  }
 
   // Filtramos usando strings "YYYY-MM-DD", no Date
   currentBolsaData = allData.filter(
@@ -257,16 +251,15 @@ function updateDashboard() {
         '<tr><td colspan="6" style="text-align:center;">Sin registros para este filtro</td></tr>';
     }
 
-    safeText(kpiBolsaTotal, formatNumber(bolsa.capacidad));
-    safeText(kpiBolsaConsumida, "0");
-    safeText(kpiBolsaConsumidaPct, "0% de la bolsa");
-    safeText(kpiBolsaDisponible, formatNumber(bolsa.capacidad));
-    safeText(kpiBolsaDisponiblePct, "100% disponible");
-    safeText(kpiValidaciones, "0");
+    setTextSafe(kpiBolsaTotal, formatNumber(bolsa.capacidad));
+    setTextSafe(kpiBolsaConsumida, "0");
+    setTextSafe(kpiBolsaConsumidaPct, "0% de la bolsa");
+    setTextSafe(kpiBolsaDisponible, formatNumber(bolsa.capacidad));
+    setTextSafe(kpiBolsaDisponiblePct, "100% disponible");
+    setTextSafe(kpiValidaciones, "0");
 
-    // Barra
-    safeWidth(gaugeFill, "0%");
-    safeText(
+    if (gaugeFill) gaugeFill.style.width = "0%";
+    setTextSafe(
       gaugeLabel,
       "0% de la bolsa consumida · Consumidas: 0 / Total: " +
         formatNumber(bolsa.capacidad) +
@@ -274,18 +267,18 @@ function updateDashboard() {
         formatNumber(bolsa.capacidad)
     );
 
-    safeText(totValidacion, "0");
-    safeText(totDeudor, "0");
-    safeText(totCodeudor, "0");
-    safeText(totTotal, "0");
+    setTextSafe(totValidacion, "0");
+    setTextSafe(totDeudor, "0");
+    setTextSafe(totCodeudor, "0");
+    setTextSafe(totTotal, "0");
 
-    // resumen por tipo
-    safeText(resValidacion, "0");
-    safeText(resDeudor, "0");
-    safeText(resCodeudor, "0");
+    setTextSafe(resValidacion, "0");
+    setTextSafe(resDeudor, "0");
+    setTextSafe(resCodeudor, "0");
+    setTextSafe(resTotal, "0");  
 
-    safeText(detalleTitulo, "");
-    safeText(filtroResumen, "");
+    setTextSafe(detalleTitulo, "");
+    setTextSafe(filtroResumen, "");
     return;
   }
 
@@ -302,9 +295,10 @@ function updateDashboard() {
   );
 
   // Actualizar cuadros de resumen (debajo de la barra)
-  safeText(resValidacion, formatNumber(totalsFilter.validacion));
-  safeText(resDeudor, formatNumber(totalsFilter.deudor));
-  safeText(resCodeudor, formatNumber(totalsFilter.codeudor));
+  setTextSafe(resValidacion, formatNumber(totalsFilter.validacion));
+  setTextSafe(resDeudor, formatNumber(totalsFilter.deudor));
+  setTextSafe(resCodeudor, formatNumber(totalsFilter.codeudor));
+  setTextSafe(resTotal, formatNumber(totalsFilter.total));
 
   // Totales de toda la bolsa (para KPIs)
   const totalsBolsa = currentBolsaData.reduce(
@@ -312,8 +306,7 @@ function updateDashboard() {
       acc.validacion += r.validacion;
       acc.deudor += r.deudor;
       acc.codeudor += r.codeudor;
-      // 1 operación = análisis deudor + análisis codeudor
-      acc.operaciones += r.deudor + r.codeudor;
+      acc.operaciones += r.deudor + r.codeudor; // 1 operación = deudor + codeudor
       return acc;
     },
     { validacion: 0, deudor: 0, codeudor: 0, operaciones: 0 }
@@ -326,22 +319,22 @@ function updateDashboard() {
   const pctDisponible = 100 - pctConsumida;
 
   // KPIs
-  safeText(kpiBolsaTotal, formatNumber(bolsa.capacidad));
-  safeText(kpiBolsaConsumida, formatNumber(bolsaConsumida));
-  safeText(
+  setTextSafe(kpiBolsaTotal, formatNumber(bolsa.capacidad));
+  setTextSafe(kpiBolsaConsumida, formatNumber(bolsaConsumida));
+  setTextSafe(
     kpiBolsaConsumidaPct,
     formatPercent(pctConsumida) + " de la bolsa"
   );
-  safeText(kpiBolsaDisponible, formatNumber(bolsaDisponible));
-  safeText(
+  setTextSafe(kpiBolsaDisponible, formatNumber(bolsaDisponible));
+  setTextSafe(
     kpiBolsaDisponiblePct,
     formatPercent(pctDisponible) + " disponible"
   );
-  safeText(kpiValidaciones, formatNumber(totalsBolsa.validacion));
+  setTextSafe(kpiValidaciones, formatNumber(totalsBolsa.validacion));
 
   // Barra
-  safeWidth(gaugeFill, Math.min(pctConsumida, 100) + "%");
-  safeText(
+  if (gaugeFill) gaugeFill.style.width = Math.min(pctConsumida, 100) + "%";
+  setTextSafe(
     gaugeLabel,
     formatPercent(pctConsumida) +
       " de la bolsa consumida · Consumidas: " +
@@ -366,9 +359,9 @@ function updateDashboard() {
     resumen += `entidad ${selectedEntidad}`;
   }
   resumen += ` · ${filtered.length} registros.`;
-  safeText(filtroResumen, resumen);
+  setTextSafe(filtroResumen, resumen);
 
-  safeText(detalleTitulo, `${filtered.length} registros`);
+  setTextSafe(detalleTitulo, `${filtered.length} registros`);
 
   // Tabla
   filtered.sort((a, b) => {
@@ -392,16 +385,15 @@ function updateDashboard() {
     });
   }
 
-  safeText(totValidacion, formatNumber(totalsFilter.validacion));
-  safeText(totDeudor, formatNumber(totalsFilter.deudor));
-  safeText(totCodeudor, formatNumber(totalsFilter.codeudor));
-  safeText(totTotal, formatNumber(totalsFilter.total));
+  setTextSafe(totValidacion, formatNumber(totalsFilter.validacion));
+  setTextSafe(totDeudor, formatNumber(totalsFilter.deudor));
+  setTextSafe(totCodeudor, formatNumber(totalsFilter.codeudor));
+  setTextSafe(totTotal, formatNumber(totalsFilter.total));
 }
 
 // ===================== EVENTOS & ARRANQUE =====================
 if (bolsaSelect) bolsaSelect.addEventListener("change", onBolsaChange);
 if (mesSelect) mesSelect.addEventListener("change", updateDashboard);
-if (entidadSelect)
-  entidadSelect.addEventListener("change", updateDashboard);
+if (entidadSelect) entidadSelect.addEventListener("change", updateDashboard);
 
 loadData();
