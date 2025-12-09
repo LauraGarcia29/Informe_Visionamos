@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Informe de Consumos InfyCredit - Visionamos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Enlazamos el CSS externo -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="header-left">
+        <div class="header-logos">
+          <!-- Usa rutas relativas (los PNG en la misma carpeta que este HTML) -->
+          <img src="logo_infycredit.png" alt="InfyCredit" class="logo" />
+          <img src="logo_visionamos.png" alt="Visionamos" class="logo" />
+        </div>
+        <div>
+          <h1>
+            <span class="infy">InfyCredit</span>
+            ·
+            <span class="vision">Visionamos</span>
+          </h1>
+          <p>
+            Informe de consumos por bolsa, mes y entidad – validación de identidad,
+            análisis deudor y codeudor.
+          </p>
+        </div>
+      </div>
+      <div class="badge">
+        <span>Alianza estratégica</span>
+        <span>InfyCredit &amp; Visionamos</span>
+      </div>
+    </header>
+
+    <!-- FILTROS -->
+    <section class="filters-card">
+      <div class="field">
+        <label for="bolsaSelect">Bolsa</label>
+        <select id="bolsaSelect"></select>
+      </div>
+      <div class="field">
+        <label for="mesSelect">Mes</label>
+        <select id="mesSelect">
+          <option value="all">Todos</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="entidadSelect">Entidad</label>
+        <select id="entidadSelect">
+          <option value="all">Todas</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Regla de negocio</label>
+        <div class="muted">
+          1 operación = <strong>análisis deudor</strong> ó <strong>análisis codeudor</strong>.<br/>
+          Las <strong>validaciones de identidad</strong> no descuentan de la bolsa (solo se reportan).
+        </div>
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <!-- KPIs / INDICADORES -->
+      <section class="card">
+        <div class="card-title">
+          Indicadores de consumo
+          <span id="rangoBolsaLabel"></span>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Bolsa total</div>
+            <div class="kpi-value" id="kpiBolsaTotal">–</div>
+            <div class="kpi-sub">Operaciones adquiridas</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Consumido</div>
+            <div class="kpi-value" id="kpiBolsaConsumida">–</div>
+            <div class="kpi-sub" id="kpiBolsaConsumidaPct">–</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Disponible</div>
+            <div class="kpi-value" id="kpiBolsaDisponible">–</div>
+            <div class="kpi-sub" id="kpiBolsaDisponiblePct">–</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Validaciones de identidad</div>
+            <div class="kpi-value" id="kpiValidaciones">–</div>
+            <div class="kpi-sub">Total periodo seleccionado</div>
+          </div>
+        </div>
+
+        <!-- Barra de consumo -->
+        <div class="gauge-wrapper">
+          <div class="gauge-bar">
+            <div class="gauge-fill" id="gaugeFill"></div>
+          </div>
+          <div class="gauge-label" id="gaugeLabel">
+            0% de la bolsa consumida · Consumidas: 0 / Total: 0 / Restantes: 0
+          </div>
+        </div>
+
+        <p class="muted" id="filtroResumen"></p>
+        <p class="error" id="errorMsg" style="display:none;"></p>
+      </section>
+
+      <!-- TABLA DETALLADA -->
+      <section class="card">
+        <div class="card-title">
+          Detalle de operaciones
+          <span id="detalleTitulo"></span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Mes</th>
+                <th>Entidad</th>
+
+                <th>
+                  <div>Validación</div>
+                  <div class="sub">de identidad</div>
+                </th>
+
+                <th>
+                  <div>Análisis</div>
+                  <div class="sub">deudor</div>
+                </th>
+
+                <th>
+                  <div>Análisis</div>
+                  <div class="sub">codeudor</div>
+                </th>
+
+                <th>
+                  <div>Total</div>
+                  <div class="sub">(registro)</div>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody id="tablaBody"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2">Totales del filtro</td>
+                <td id="totValidacion">0</td>
+                <td id="totDeudor">0</td>
+                <td id="totCodeudor">0</td>
+                <td id="totTotal">0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <p class="muted">
+          Los totales consideran únicamente los registros que cumplen con los filtros de
+          bolsa, mes y entidad seleccionados.
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <!-- LÓGICA DEL DASHBOARD -->
+   <script src="dashboard.js"></script>
+</body>
+</html>
