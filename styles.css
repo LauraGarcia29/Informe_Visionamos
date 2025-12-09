@@ -410,3 +410,45 @@ tfoot td:nth-child(3) {
   color: #111827;
   text-align: right;
 }
+
+/* ====== RESUMEN POR TIPO (VALIDACIÓN / DEUDOR / CODEUDOR) ====== */
+.resumen-card {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f9f5ff;
+  border: 1px solid rgba(139, 44, 214, 0.18);
+}
+
+.resumen-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  margin-bottom: 8px;
+}
+
+.resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.resumen-box {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resumen-label {
+  font-size: 0.75rem;
+  color: var(--text-soft);
+}
+
+.resumen-value {
+  font-size: 1rem;
+  font-weight: 700;
+}

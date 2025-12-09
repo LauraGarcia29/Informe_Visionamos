@@ -47,7 +47,9 @@ const kpiBolsaTotal = document.getElementById("kpiBolsaTotal");
 const kpiBolsaConsumida = document.getElementById("kpiBolsaConsumida");
 const kpiBolsaConsumidaPct = document.getElementById("kpiBolsaConsumidaPct");
 const kpiBolsaDisponible = document.getElementById("kpiBolsaDisponible");
-const kpiBolsaDisponiblePct = document.getElementById("kpiBolsaDisponiblePct");
+const kpiBolsaDisponiblePct = document.getElementById(
+  "kpiBolsaDisponiblePct"
+);
 const kpiValidaciones = document.getElementById("kpiValidaciones");
 
 const gaugeFill = document.getElementById("gaugeFill");
@@ -64,16 +66,10 @@ const totDeudor = document.getElementById("totDeudor");
 const totCodeudor = document.getElementById("totCodeudor");
 const totTotal = document.getElementById("totTotal");
 
-// Nuevos cuadros de resumen por tipo
+// Nuevos cuadros de resumen por tipo (debajo de la barra de consumo)
 const resValidacion = document.getElementById("resValidacion");
 const resDeudor = document.getElementById("resDeudor");
 const resCodeudor = document.getElementById("resCodeudor");
-
-
-const boxValidacionFiltro = document.getElementById("boxValidacionFiltro");
-const boxDeudorFiltro = document.getElementById("boxDeudorFiltro");
-const boxCodeudorFiltro = document.getElementById("boxCodeudorFiltro");
-
 
 // ===================== ESTADO =====================
 let allData = [];
@@ -102,6 +98,15 @@ function getBolsaById(id) {
   return bolsas.find((b) => b.id === id) || bolsas[0];
 }
 
+// helpers para no reventar si algún elemento es null
+function safeText(el, value) {
+  if (el) el.textContent = value;
+}
+
+function safeWidth(el, value) {
+  if (el) el.style.width = value;
+}
+
 // ===================== CARGA DE DATOS =====================
 async function loadData() {
   try {
@@ -114,13 +119,13 @@ async function loadData() {
     const raw = await resp.json();
 
     allData = raw.map((row) => {
-      const mesStr = String(row["MES"]).trim();     // "2025-11-01"
-      const mesKey = mesStr.slice(0, 7);            // "2025-11"
+      const mesStr = String(row["MES"]).trim(); // "2025-11-01"
+      const mesKey = mesStr.slice(0, 7); // "2025-11"
 
       return {
-        mesStr,                                     // para comparar con bolsa
-        mesKey,                                     // para filtros
-        mesLabel: labelFromMesStr(mesStr),          // "NOVIEMBRE 2025"
+        mesStr,
+        mesKey,
+        mesLabel: labelFromMesStr(mesStr),
         year: row["AÑO"],
         entidad: row["ENTIDAD"],
         validacion: Number(row["VALIDACIÓN DE IDENTIDAD"] || 0),
@@ -130,7 +135,6 @@ async function loadData() {
       };
     });
 
-    // Debug rápido en consola (no afecta nada visual)
     console.log("Meses encontrados en JSON:", [
       ...new Set(allData.map((r) => r.mesKey)),
     ]);
@@ -140,17 +144,21 @@ async function loadData() {
     );
 
     initBolsaSelect();
-    bolsaSelect.value = "bolsa3"; // por defecto la bolsa vigente
+    bolsaSelect.value = "bolsa3"; // por defecto bolsa vigente
     onBolsaChange();
   } catch (err) {
     console.error(err);
-    errorMsg.style.display = "block";
-    errorMsg.textContent = err.message;
+    if (errorMsg) {
+      errorMsg.style.display = "block";
+      errorMsg.textContent = err.message;
+    }
   }
 }
 
 // ===================== INICIALIZACIÓN DE FILTROS =====================
 function initBolsaSelect() {
+  if (!bolsaSelect) return;
+
   bolsaSelect.innerHTML = "";
   bolsas.forEach((b) => {
     const opt = document.createElement("option");
@@ -163,17 +171,19 @@ function initBolsaSelect() {
 function onBolsaChange() {
   const bolsa = getBolsaById(bolsaSelect.value);
 
-  rangoBolsaLabel.textContent = `${bolsa.inicio
-    .split("-")
-    .reverse()
-    .join("/")} – ${bolsa.fin.split("-").reverse().join("/")}`;
+  safeText(
+    rangoBolsaLabel,
+    `${bolsa.inicio.split("-").reverse().join("/")} – ${bolsa.fin
+      .split("-")
+      .reverse()
+      .join("/")}`
+  );
 
-  // 👉 Filtramos usando strings "YYYY-MM-DD", no Date
+  // Filtramos usando strings "YYYY-MM-DD", no Date
   currentBolsaData = allData.filter(
     (r) => r.mesStr >= bolsa.inicio && r.mesStr <= bolsa.fin
   );
 
-  // Debug
   console.log(
     "Meses en la bolsa seleccionada:",
     [...new Set(currentBolsaData.map((r) => r.mesKey))]
@@ -188,36 +198,40 @@ function onBolsaChange() {
   });
 
   // Meses
-  mesSelect.innerHTML = "";
-  const optAllMes = document.createElement("option");
-  optAllMes.value = "all";
-  optAllMes.textContent = "Todos";
-  mesSelect.appendChild(optAllMes);
+  if (mesSelect) {
+    mesSelect.innerHTML = "";
+    const optAllMes = document.createElement("option");
+    optAllMes.value = "all";
+    optAllMes.textContent = "Todos";
+    mesSelect.appendChild(optAllMes);
 
-  [...monthSet.entries()]
-    .sort((a, b) => (a[0] < b[0] ? -1 : 1))
-    .forEach(([key, label]) => {
-      const opt = document.createElement("option");
-      opt.value = key;
-      opt.textContent = label;
-      mesSelect.appendChild(opt);
-    });
+    [...monthSet.entries()]
+      .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+      .forEach(([key, label]) => {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = label;
+        mesSelect.appendChild(opt);
+      });
+  }
 
   // Entidades
-  entidadSelect.innerHTML = "";
-  const optAllEnt = document.createElement("option");
-  optAllEnt.value = "all";
-  optAllEnt.textContent = "Todas";
-  entidadSelect.appendChild(optAllEnt);
+  if (entidadSelect) {
+    entidadSelect.innerHTML = "";
+    const optAllEnt = document.createElement("option");
+    optAllEnt.value = "all";
+    optAllEnt.textContent = "Todas";
+    entidadSelect.appendChild(optAllEnt);
 
-  [...entidadesSet]
-    .sort((a, b) => (a < b ? -1 : 1))
-    .forEach((ent) => {
-      const opt = document.createElement("option");
-      opt.value = ent;
-      opt.textContent = ent;
-      entidadSelect.appendChild(opt);
-    });
+    [...entidadesSet]
+      .sort((a, b) => (a < b ? -1 : 1))
+      .forEach((ent) => {
+        const opt = document.createElement("option");
+        opt.value = ent;
+        opt.textContent = ent;
+        entidadSelect.appendChild(opt);
+      });
+  }
 
   updateDashboard();
 }
@@ -225,8 +239,8 @@ function onBolsaChange() {
 // ===================== ACTUALIZAR DASHBOARD =====================
 function updateDashboard() {
   const bolsa = getBolsaById(bolsaSelect.value);
-  const selectedMesKey = mesSelect.value;
-  const selectedEntidad = entidadSelect.value;
+  const selectedMesKey = mesSelect ? mesSelect.value : "all";
+  const selectedEntidad = entidadSelect ? entidadSelect.value : "all";
 
   let filtered = currentBolsaData;
   if (selectedMesKey !== "all") {
@@ -238,38 +252,40 @@ function updateDashboard() {
 
   // Caso sin registros
   if (filtered.length === 0) {
-    tablaBody.innerHTML =
-      '<tr><td colspan="6" style="text-align:center;">Sin registros para este filtro</td></tr>';
+    if (tablaBody) {
+      tablaBody.innerHTML =
+        '<tr><td colspan="6" style="text-align:center;">Sin registros para este filtro</td></tr>';
+    }
 
-    kpiBolsaTotal.textContent = formatNumber(bolsa.capacidad);
-    kpiBolsaConsumida.textContent = "0";
-    kpiBolsaConsumidaPct.textContent = "0% de la bolsa";
-    kpiBolsaDisponible.textContent = formatNumber(bolsa.capacidad);
-    kpiBolsaDisponiblePct.textContent = "100% disponible";
-    kpiValidaciones.textContent = "0";
+    safeText(kpiBolsaTotal, formatNumber(bolsa.capacidad));
+    safeText(kpiBolsaConsumida, "0");
+    safeText(kpiBolsaConsumidaPct, "0% de la bolsa");
+    safeText(kpiBolsaDisponible, formatNumber(bolsa.capacidad));
+    safeText(kpiBolsaDisponiblePct, "100% disponible");
+    safeText(kpiValidaciones, "0");
 
-    gaugeFill.style.width = "0%";
-    gaugeLabel.textContent =
+    // Barra
+    safeWidth(gaugeFill, "0%");
+    safeText(
+      gaugeLabel,
       "0% de la bolsa consumida · Consumidas: 0 / Total: " +
-      formatNumber(bolsa.capacidad) +
-      " / Restantes: " +
-      formatNumber(bolsa.capacidad);
+        formatNumber(bolsa.capacidad) +
+        " / Restantes: " +
+        formatNumber(bolsa.capacidad)
+    );
 
-    totValidacion.textContent = "0";
-    totDeudor.textContent = "0";
-    totCodeudor.textContent = "0";
-    totTotal.textContent = "0";
+    safeText(totValidacion, "0");
+    safeText(totDeudor, "0");
+    safeText(totCodeudor, "0");
+    safeText(totTotal, "0");
 
-    boxValidacionFiltro.textContent = "0";
-    boxDeudorFiltro.textContent = "0";
-    boxCodeudorFiltro.textContent = "0";
+    // resumen por tipo
+    safeText(resValidacion, "0");
+    safeText(resDeudor, "0");
+    safeText(resCodeudor, "0");
 
-    detalleTitulo.textContent = "";
-    filtroResumen.textContent = "";
-
-    resValidacion.textContent = "0";
-    resDeudor.textContent = "0";
-    resCodeudor.textContent = "0";
+    safeText(detalleTitulo, "");
+    safeText(filtroResumen, "");
     return;
   }
 
@@ -285,16 +301,10 @@ function updateDashboard() {
     { validacion: 0, deudor: 0, codeudor: 0, total: 0 }
   );
 
-// 👉 aquí actualizamos los cuadros de resumen:
-resValidacion.textContent = formatNumber(totalsFilter.validacion);
-resDeudor.textContent = formatNumber(totalsFilter.deudor);
-resCodeudor.textContent = formatNumber(totalsFilter.codeudor);
-
-  // Totales para el tablero nuevo (según filtros)
-  boxValidacionFiltro.textContent = formatNumber(totalsFilter.validacion);
-  boxDeudorFiltro.textContent = formatNumber(totalsFilter.deudor);
-  boxCodeudorFiltro.textContent = formatNumber(totalsFilter.codeudor);
-
+  // Actualizar cuadros de resumen (debajo de la barra)
+  safeText(resValidacion, formatNumber(totalsFilter.validacion));
+  safeText(resDeudor, formatNumber(totalsFilter.deudor));
+  safeText(resCodeudor, formatNumber(totalsFilter.codeudor));
 
   // Totales de toda la bolsa (para KPIs)
   const totalsBolsa = currentBolsaData.reduce(
@@ -302,7 +312,8 @@ resCodeudor.textContent = formatNumber(totalsFilter.codeudor);
       acc.validacion += r.validacion;
       acc.deudor += r.deudor;
       acc.codeudor += r.codeudor;
-      acc.operaciones += r.deudor + r.codeudor; // 1 operación = deudor + codeudor
+      // 1 operación = análisis deudor + análisis codeudor
+      acc.operaciones += r.deudor + r.codeudor;
       return acc;
     },
     { validacion: 0, deudor: 0, codeudor: 0, operaciones: 0 }
@@ -315,31 +326,37 @@ resCodeudor.textContent = formatNumber(totalsFilter.codeudor);
   const pctDisponible = 100 - pctConsumida;
 
   // KPIs
-  kpiBolsaTotal.textContent = formatNumber(bolsa.capacidad);
-  kpiBolsaConsumida.textContent = formatNumber(bolsaConsumida);
-  kpiBolsaConsumidaPct.textContent =
-    formatPercent(pctConsumida) + " de la bolsa";
-  kpiBolsaDisponible.textContent = formatNumber(bolsaDisponible);
-  kpiBolsaDisponiblePct.textContent =
-    formatPercent(pctDisponible) + " disponible";
-  kpiValidaciones.textContent = formatNumber(totalsBolsa.validacion);
+  safeText(kpiBolsaTotal, formatNumber(bolsa.capacidad));
+  safeText(kpiBolsaConsumida, formatNumber(bolsaConsumida));
+  safeText(
+    kpiBolsaConsumidaPct,
+    formatPercent(pctConsumida) + " de la bolsa"
+  );
+  safeText(kpiBolsaDisponible, formatNumber(bolsaDisponible));
+  safeText(
+    kpiBolsaDisponiblePct,
+    formatPercent(pctDisponible) + " disponible"
+  );
+  safeText(kpiValidaciones, formatNumber(totalsBolsa.validacion));
 
   // Barra
-  gaugeFill.style.width = Math.min(pctConsumida, 100) + "%";
-  gaugeLabel.textContent =
+  safeWidth(gaugeFill, Math.min(pctConsumida, 100) + "%");
+  safeText(
+    gaugeLabel,
     formatPercent(pctConsumida) +
-    " de la bolsa consumida · Consumidas: " +
-    formatNumber(bolsaConsumida) +
-    " / Total: " +
-    formatNumber(bolsa.capacidad) +
-    " / Restantes: " +
-    formatNumber(bolsaDisponible);
+      " de la bolsa consumida · Consumidas: " +
+      formatNumber(bolsaConsumida) +
+      " / Total: " +
+      formatNumber(bolsa.capacidad) +
+      " / Restantes: " +
+      formatNumber(bolsaDisponible)
+  );
 
   // Resumen filtros
   let resumen = "Mostrando ";
   if (selectedMesKey === "all") {
     resumen += "todos los meses";
-  } else {
+  } else if (mesSelect) {
     resumen += mesSelect.options[mesSelect.selectedIndex].text;
   }
   resumen += " · ";
@@ -349,9 +366,9 @@ resCodeudor.textContent = formatNumber(totalsFilter.codeudor);
     resumen += `entidad ${selectedEntidad}`;
   }
   resumen += ` · ${filtered.length} registros.`;
-  filtroResumen.textContent = resumen;
+  safeText(filtroResumen, resumen);
 
-  detalleTitulo.textContent = `${filtered.length} registros`;
+  safeText(detalleTitulo, `${filtered.length} registros`);
 
   // Tabla
   filtered.sort((a, b) => {
@@ -359,30 +376,32 @@ resCodeudor.textContent = formatNumber(totalsFilter.codeudor);
     return a.mesKey < b.mesKey ? -1 : 1;
   });
 
-  tablaBody.innerHTML = "";
-  filtered.forEach((r) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${r.mesLabel}</td>
-      <td>${r.entidad}</td>
-      <td>${formatNumber(r.validacion)}</td>
-      <td>${formatNumber(r.deudor)}</td>
-      <td>${formatNumber(r.codeudor)}</td>
-      <td>${formatNumber(r.total)}</td>
-    `;
-    tablaBody.appendChild(tr);
-  });
+  if (tablaBody) {
+    tablaBody.innerHTML = "";
+    filtered.forEach((r) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${r.mesLabel}</td>
+        <td>${r.entidad}</td>
+        <td>${formatNumber(r.validacion)}</td>
+        <td>${formatNumber(r.deudor)}</td>
+        <td>${formatNumber(r.codeudor)}</td>
+        <td>${formatNumber(r.total)}</td>
+      `;
+      tablaBody.appendChild(tr);
+    });
+  }
 
-  totValidacion.textContent = formatNumber(totalsFilter.validacion);
-  totDeudor.textContent = formatNumber(totalsFilter.deudor);
-  totCodeudor.textContent = formatNumber(totalsFilter.codeudor);
-  totTotal.textContent = formatNumber(totalsFilter.total);
+  safeText(totValidacion, formatNumber(totalsFilter.validacion));
+  safeText(totDeudor, formatNumber(totalsFilter.deudor));
+  safeText(totCodeudor, formatNumber(totalsFilter.codeudor));
+  safeText(totTotal, formatNumber(totalsFilter.total));
 }
 
 // ===================== EVENTOS & ARRANQUE =====================
-bolsaSelect.addEventListener("change", onBolsaChange);
-mesSelect.addEventListener("change", updateDashboard);
-entidadSelect.addEventListener("change", updateDashboard);
+if (bolsaSelect) bolsaSelect.addEventListener("change", onBolsaChange);
+if (mesSelect) mesSelect.addEventListener("change", updateDashboard);
+if (entidadSelect)
+  entidadSelect.addEventListener("change", updateDashboard);
 
 loadData();
-
