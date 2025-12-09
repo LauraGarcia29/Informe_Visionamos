@@ -61,13 +61,15 @@
       </div>
     </section>
 
-    <div class="content-grid">
-      <!-- KPIs / INDICADORES -->
+   <div class="content-grid">
+      <!-- KPIs / INDICADORES + RESUMEN POR TIPO -->
       <section class="card">
         <div class="card-title">
           Indicadores de consumo
           <span id="rangoBolsaLabel"></span>
         </div>
+
+        <!-- KPIs superiores -->
         <div class="kpi-grid">
           <div class="kpi">
             <div class="kpi-label">Bolsa total</div>
@@ -101,52 +103,30 @@
           </div>
         </div>
 
-        <p class="muted" id="filtroResumen"></p>
-        <p class="error" id="errorMsg" style="display:none;"></p>
-      </section>
-      
-      <section class="card">
-  <div class="card-title">
-    Indicadores de consumo
-    <span id="rangoBolsaLabel"></span>
-  </div>
-  <div class="kpi-grid">
-    ...
-  </div>
-
-  <div class="gauge-wrapper">
-        ...
-  </div>
-
-          <!-- NUEVO TABLERO: RESUMEN POR TIPO DE OPERACIÓN -->
-        <div class="ops-card">
-          <div class="ops-title">
-            Resumen de operaciones (según filtros)
-          </div>
-          <div class="ops-grid">
-            <div class="ops-box">
-              <div class="ops-label">Validación de identidad</div>
-              <div class="ops-value" id="boxValidacionFiltro">0</div>
+        <!-- 🔽 NUEVO: resumen por tipo (según filtros) dentro de la MISMA tarjeta -->
+        <div class="resumen-card">
+          <div class="resumen-title">Resumen de operaciones (según filtros)</div>
+          <div class="resumen-grid">
+            <div class="resumen-box">
+              <div class="resumen-label">Validación de identidad</div>
+              <div class="resumen-value" id="resValidacion">0</div>
             </div>
-            <div class="ops-box">
-              <div class="ops-label">Análisis deudor</div>
-              <div class="ops-value" id="boxDeudorFiltro">0</div>
+            <div class="resumen-box">
+              <div class="resumen-label">Análisis deudor</div>
+              <div class="resumen-value" id="resDeudor">0</div>
             </div>
-            <div class="ops-box">
-              <div class="ops-label">Análisis codeudor</div>
-              <div class="ops-value" id="boxCodeudorFiltro">0</div>
+            <div class="resumen-box">
+              <div class="resumen-label">Análisis codeudor</div>
+              <div class="resumen-value" id="resCodeudor">0</div>
             </div>
           </div>
         </div>
 
-  <p class="muted" id="filtroResumen"></p>
-  <p class="error" id="errorMsg" style="display:none;"></p>
-</section>
+        <p class="muted" id="filtroResumen"></p>
+        <p class="error" id="errorMsg" style="display:none;"></p>
+      </section>
 
-
-
-
-      <!-- TABLA DETALLADA -->
+      <!-- DERECHA: DETALLE DE OPERACIONES -->
       <section class="card">
         <div class="card-title">
           Detalle de operaciones
@@ -158,37 +138,32 @@
               <tr>
                 <th>Mes</th>
                 <th>Entidad</th>
-
                 <th>
                   <div>Validación</div>
                   <div class="sub">de identidad</div>
                 </th>
-
                 <th>
                   <div>Análisis</div>
                   <div class="sub">deudor</div>
                 </th>
-
                 <th>
                   <div>Análisis</div>
                   <div class="sub">codeudor</div>
                 </th>
-
                 <th>
                   <div>Total</div>
                   <div class="sub">(registro)</div>
                 </th>
               </tr>
             </thead>
-
             <tbody id="tablaBody"></tbody>
             <tfoot>
               <tr>
                 <td colspan="2">Totales del filtro</td>
-                <td id="totValidacion">0</td>
-                <td id="totDeudor">0</td>
-                <td id="totCodeudor">0</td>
-                <td id="totTotal">0</td>
+                <td id="totValidacion" style="text-align:right;">0</td>
+                <td id="totDeudor" style="text-align:right;">0</td>
+                <td id="totCodeudor" style="text-align:right;">0</td>
+                <td id="totTotal" style="text-align:right;">0</td>
               </tr>
             </tfoot>
           </table>
