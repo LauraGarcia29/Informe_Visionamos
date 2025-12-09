@@ -108,12 +108,29 @@ header p {
   padding: 16px;
   margin-bottom: 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
   align-items: flex-end;
   border: 1px solid rgba(148, 163, 184, 0.25);
 }
 
+/* Que los selects llenen el ancho de la cajita */
+.filters-card .field select {
+  width: 100%;
+  display: block;
+}
+
+/* En móvil: una columna, igual de ancho que las tarjetas de KPIs */
+@media (max-width: 768px) {
+  .filters-card {
+    grid-template-columns: 1fr;
+     }
+
+     .filters-card .field {
+    width: 100%;
+  }
+  }
 .field {
   display: flex;
   flex-direction: column;
