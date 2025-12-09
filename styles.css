@@ -364,3 +364,49 @@ thead th .sub {
 tfoot td:nth-child(3) {
     text-align: right !important;
 }
+
+/* ====== RESUMEN POR TIPO DE OPERACIÓN ====== */
+
+.ops-card {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f9fafb;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.ops-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.ops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.ops-box {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+.ops-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.ops-value {
+  margin-top: 2px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: right;
+}

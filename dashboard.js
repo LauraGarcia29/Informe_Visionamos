@@ -64,6 +64,11 @@ const totDeudor = document.getElementById("totDeudor");
 const totCodeudor = document.getElementById("totCodeudor");
 const totTotal = document.getElementById("totTotal");
 
+const boxValidacionFiltro = document.getElementById("boxValidacionFiltro");
+const boxDeudorFiltro = document.getElementById("boxDeudorFiltro");
+const boxCodeudorFiltro = document.getElementById("boxCodeudorFiltro");
+
+
 // ===================== ESTADO =====================
 let allData = [];
 let currentBolsaData = [];
@@ -248,6 +253,11 @@ function updateDashboard() {
     totDeudor.textContent = "0";
     totCodeudor.textContent = "0";
     totTotal.textContent = "0";
+
+    boxValidacionFiltro.textContent = "0";
+    boxDeudorFiltro.textContent = "0";
+    boxCodeudorFiltro.textContent = "0";
+
     detalleTitulo.textContent = "";
     filtroResumen.textContent = "";
     return;
@@ -264,6 +274,12 @@ function updateDashboard() {
     },
     { validacion: 0, deudor: 0, codeudor: 0, total: 0 }
   );
+
+  // Totales para el tablero nuevo (según filtros)
+  boxValidacionFiltro.textContent = formatNumber(totalsFilter.validacion);
+  boxDeudorFiltro.textContent = formatNumber(totalsFilter.deudor);
+  boxCodeudorFiltro.textContent = formatNumber(totalsFilter.codeudor);
+
 
   // Totales de toda la bolsa (para KPIs)
   const totalsBolsa = currentBolsaData.reduce(
@@ -354,3 +370,4 @@ mesSelect.addEventListener("change", updateDashboard);
 entidadSelect.addEventListener("change", updateDashboard);
 
 loadData();
+
