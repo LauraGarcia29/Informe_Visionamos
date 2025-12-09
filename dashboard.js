@@ -64,6 +64,12 @@ const totDeudor = document.getElementById("totDeudor");
 const totCodeudor = document.getElementById("totCodeudor");
 const totTotal = document.getElementById("totTotal");
 
+// Nuevos cuadros de resumen por tipo
+const resValidacion = document.getElementById("resValidacion");
+const resDeudor = document.getElementById("resDeudor");
+const resCodeudor = document.getElementById("resCodeudor");
+
+
 const boxValidacionFiltro = document.getElementById("boxValidacionFiltro");
 const boxDeudorFiltro = document.getElementById("boxDeudorFiltro");
 const boxCodeudorFiltro = document.getElementById("boxCodeudorFiltro");
@@ -260,6 +266,10 @@ function updateDashboard() {
 
     detalleTitulo.textContent = "";
     filtroResumen.textContent = "";
+
+    resValidacion.textContent = "0";
+    resDeudor.textContent = "0";
+    resCodeudor.textContent = "0";
     return;
   }
 
@@ -274,6 +284,11 @@ function updateDashboard() {
     },
     { validacion: 0, deudor: 0, codeudor: 0, total: 0 }
   );
+
+// 👉 aquí actualizamos los cuadros de resumen:
+resValidacion.textContent = formatNumber(totalsFilter.validacion);
+resDeudor.textContent = formatNumber(totalsFilter.deudor);
+resCodeudor.textContent = formatNumber(totalsFilter.codeudor);
 
   // Totales para el tablero nuevo (según filtros)
   boxValidacionFiltro.textContent = formatNumber(totalsFilter.validacion);
