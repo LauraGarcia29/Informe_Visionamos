@@ -102,17 +102,11 @@ header p {
 
 /* FILTROS */
 .filters-card {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  padding: 16px;
-  margin-bottom: 16px;
+  /* ya hereda background, padding, borde y sombra de .card */
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
-  margin-bottom: 1.5rem;
   align-items: flex-end;
-  border: 1px solid rgba(148, 163, 184, 0.25);
 }
 
 /* Que los selects llenen el ancho de la cajita */
@@ -125,12 +119,14 @@ header p {
 @media (max-width: 768px) {
   .filters-card {
     grid-template-columns: 1fr;
-     }
+  }
 
-     .filters-card .field {
+  .filters-card .field {
     width: 100%;
   }
-  }
+}
+
+
 .field {
   display: flex;
   flex-direction: column;
